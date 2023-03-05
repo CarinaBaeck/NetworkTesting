@@ -36,9 +36,11 @@ class MainActivity : AppCompatActivity() {
                 val outputStream = socket.getOutputStream()
 
                 //write matrNr to byte array and send to server
-                val ByteArrayOutputStream = ByteArrayOutputStream()
-                ByteArrayOutputStream.write(matrNr.toByteArray())
-                ByteArrayOutputStream.writeTo(outputStream)
+                //val ByteArrayOutputStream = ByteArrayOutputStream()
+                //ByteArrayOutputStream.write(matrNr.toByteArray())
+                //ByteArrayOutputStream.writeTo(outputStream)
+                val inputBytes = matrNr.toByteArray()
+                outputStream.write(inputBytes)
 
                 //read response from server
                 val inputStream = socket.getInputStream()
