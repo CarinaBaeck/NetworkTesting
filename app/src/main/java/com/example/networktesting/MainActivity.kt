@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -28,19 +29,22 @@ class MainActivity : AppCompatActivity() {
         buttonBerechnung = findViewById(R.id.buttonBerechnung)
 
         button.setOnClickListener() {
-            val matrNr = matrNr.text.toString()
-            Thread(Runnable{
-                sendToServer(matrNr)
+            val matrNrString = matrNr.text.toString()
+            Thread(Runnable {
+                sendToServer(matrNrString)
             }).start()
 
         }
         buttonBerechnung.setOnClickListener() {
-            //findCommonFactor(matrNr)
+            Thread(Runnable {
+                val matrNrCharArray = matrNr.text.toString().toCharArray()
+                findDigitsWithCommonFactor(matrNrCharArray)
+            }).start()
         }
     }
 
-    fun sendToServer(matrNr: String){
-        run() {
+    fun sendToServer(matrNr: String) {
+        fun run() {
             try {
                 val socket = Socket("se2-isys.aau.at", 53212)
                 val outputStream = socket.getOutputStream()
@@ -57,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 val bufferedReader = BufferedReader(InputStreamReader(inputStream))
                 val response = bufferedReader.readLine()
 
-                runOnUiThread{
+                runOnUiThread {
                     responseField.setText(response)
                 }
 
@@ -68,15 +72,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-}//).start()
 
+    fun gcd(a: Int, b: Int): Int{
+        return if(b == 0) a else gcd(b, a % b)
+    }
+    private fun findDigitsWithCommonFactor(nr: CharArray) {
+        for(i in 0 until nr.size-1){
+            for(j in i +1 until nr.size){
+                val digit1 = nr[i].toString().toInt()
+                val digit2 = nr[j].toString().toInt()
 
-
-
-
-
-    //private fun findCommonFactor(matrNr: Int){
-      //  matrNr.toInt()
-
-
-    //}
+                if(gcd(digit1, digit2)>1){
+                    runOnUiThread {
+                        responseField.setText("Indexes $i und $j")
+                    }
+                }
+                else{
+                    runOnUiThread {
+                        responseField.setText("No digits found")
+                    }
+                }
+            }
+        }
+    }
+}
